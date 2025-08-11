@@ -1,18 +1,18 @@
 import { asyncLocalStorage, storeItemFromRequest } from "./utils.ts";
-import type { FreshContext, Plugin } from "$fresh/server.ts";
 import { type Cookie, setCookie } from "@std/http";
 
-export type FreshOptions = {
+export type FreshV1Options = {
   setCookies?: Cookie[];
   doNotLogURLs?: RegExp;
 };
 
-function freshLoggerMiddleware(
-  options?: FreshOptions,
-): (req: Request, ctx: FreshContext) => Promise<Response> {
+function freshV1LoggerMiddleware(
+  options?: FreshV1Options,
+// deno-lint-ignore no-explicit-any
+): (req: any, ctx: any) => Promise<Response> {
   return async (
-    req: Request,
-    ctx: FreshContext,
+    req,
+    ctx,
   ) => {
     if (ctx.destination !== "route") {
       return await ctx.next();
@@ -79,15 +79,15 @@ function freshLoggerMiddleware(
   };
 }
 
-export function freshLoggerPlugin(
-  options?: FreshOptions,
-): Plugin {
+export function freshV1LoggerPlugin(
+  options?: FreshV1Options,
+) {
   return {
     name: "daringwayFreshLoggerPlugin",
     middlewares: [
       {
         path: "/",
-        middleware: { handler: freshLoggerMiddleware(options) },
+        middleware: { handler: freshV1LoggerMiddleware(options) },
       },
     ],
   };
