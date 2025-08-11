@@ -6,6 +6,17 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+local
+.DS_Store
+build/
+dist/
+.env
+package.json
+
+# Crash log files
+crash.log
+crash.*.log
+
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
