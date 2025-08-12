@@ -1,5 +1,7 @@
 // noinspection JSUnusedGlobalSymbols
 
+import { consoleMetrics } from "./dare-console-logger.ts";
+
 type DareMetrics<T extends string> = Record<T, number>;
 
 interface MetricsConfig {
@@ -33,6 +35,17 @@ class MetricTimer {
   }
 }
 
+/**
+ * A class to track metrics for a specific operation
+ * @param metricNames - An array of metric names to track
+ * @param config - Configuration options for the metrics tracker
+ * @param config.metricFor - The name of the operation being tracked
+ * @param config.writeIntervalS - The interval in seconds at which to write metrics to the console, default 180s, set to 0 to disable
+ * @param config.elapseTimeEnabled - Whether to enable the elapse time metric, default rue
+ * @returns A MetricsTracker instance
+ * @example
+ * const metricsTracker = new MetricsTracker(["metric1", "metric2"], {})
+ */
 export class MetricsTracker<T extends string> {
   #metrics: DareMetrics<T>;
   #intervalId: ReturnType<typeof setInterval> | null = null;
@@ -56,9 +69,9 @@ export class MetricsTracker<T extends string> {
     }, {} as DareMetrics<T>);
 
     if (this.#config.elapseTimeEnabled) {
-      this.elapseTimeTimer = new MetricTimer(this, "requestProcessTimeMs");
+      this.elapseTimeTimer = new MetricTimer(this, "elapseTimeMs");
       // @ts-ignore  an internal metric
-      this.#metrics["requestProcessTimeMs"] = 0;
+      this.#metrics["elapseTimeMs"] = 0;
     }
     if (
       this.#config.writeIntervalS > 0 && this.#config.metricFor !== "unknown"
@@ -74,11 +87,7 @@ export class MetricsTracker<T extends string> {
 
   // Method to increase a count
   increment(metric: T, amount = 1): void {
-    if (typeof this.#metrics[metric] === "number") {
-      this.#metrics[metric] += amount;
-    } else {
-      console.warn(`${String(metric)} is not a valid number metric.`);
-    }
+    this.#metrics[metric] += amount;
   }
 
   // Method to reset the metrics to zero
@@ -93,12 +102,10 @@ export class MetricsTracker<T extends string> {
     if (this.#config.elapseTimeEnabled && this.elapseTimeTimer) {
       this.elapseTimeTimer.stop();
     }
-    console.info(`metrics for ${this.#config.metricFor}`, {
-      metrics: { ...this.#metrics },
-    });
+    consoleMetrics(this.#config.metricFor, this.#metrics);
     this.resetMetrics();
     if (this.#config.elapseTimeEnabled) {
-      this.elapseTimeTimer = new MetricTimer(this, "requestProcessTimeMs");
+      this.elapseTimeTimer = new MetricTimer(this, "elapseTimeMs");
     }
   }
 

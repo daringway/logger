@@ -69,7 +69,7 @@ const metricNames = [
   "logStdoutBackpressureCount",
   "logStdoutDrainMS",
 ];
-const logMetrics = new MetricsTracker(metricNames, {
+const logInternalMetrics = new MetricsTracker(metricNames, {
   metricFor: "logger",
   elapseTimeEnabled: true,
   writeIntervalS: logConfig.logSecondsBetweenMetrics,
@@ -112,6 +112,15 @@ function dequeBatch(): DequeBatchResult {
   };
 }
 
+/**
+ * Run a function in a specific context
+ * @param context object
+ * @param fn
+ */
+export function runInContext<R>(context: Record<string, any>, fn: () => R): R {
+  return asyncLocalStorage.run(context, fn);
+}
+
 export function flushLogQueue(emptyTheQueue: boolean = false) {
   clearTimeout(flushTimeout);
   flushTimeout = undefined;
@@ -121,21 +130,21 @@ export function flushLogQueue(emptyTheQueue: boolean = false) {
     return;
   }
   isFlushing = true;
-  const logFlushTimer = logMetrics.startTimer("logFlushMS");
+  const logFlushTimer = logInternalMetrics.startTimer("logFlushMS");
 
   const { logCount, totalSize, output } = dequeBatch();
-  logMetrics.increment("logWrittenCount", logCount);
-  logMetrics.increment("logFlushBytes", totalSize);
-  logMetrics.increment("logFlushCount");
+  logInternalMetrics.increment("logWrittenCount", logCount);
+  logInternalMetrics.increment("logFlushBytes", totalSize);
+  logInternalMetrics.increment("logFlushCount");
 
   if (!process.stdout.write(output)) {
     // Handle backpressure
-    const drainTimer = logMetrics.startTimer("logStdoutDrainMS");
+    const drainTimer = logInternalMetrics.startTimer("logStdoutDrainMS");
 
     process.stdout.once("drain", () => {
       logFlushTimer.stop();
       drainTimer.stop();
-      logMetrics.increment("logStdoutBackpressureCount");
+      logInternalMetrics.increment("logStdoutBackpressureCount");
       flushLogQueue(emptyTheQueue);
     });
   } else {
@@ -163,8 +172,6 @@ const logFormatter = (
       Object.keys(logConfig.logMeta).length > 0 && { meta: logConfig.logMeta }),
     ...asyncLocalStorage.getStore(),
   };
-  // const context: Record<string, any> = asyncLocalStorage.getStore() || {};
-
   const metrics: object = context?.metrics?.getMetrics() || {};
   delete context["metrics"];
 
@@ -231,8 +238,21 @@ function queueLog(logObject: LogObject) {
   }
 }
 
+export function consoleMetrics(metricsFor: string, metrics: Record<string,number>): void {
+    const output = logFormatter("metrics", `metrics for ${metricsFor}`, { metrics: metrics });
+    if (logConfig.logObjects) {
+      origWarn(output);
+    } else {
+      queueLog(output);
+    }
+}
+
+/**
+ * Initialize the logger
+ * @param configuration
+ */
 export function initLogger(
-  configuration: Partial<LoggingConfig>,
+  configuration: Partial<LoggingConfig> = {},
 ): void {
   const updates = baseZodLogConfig.partial().parse(configuration);
   const newMeta = { ...logConfig.logMeta, ...updates.logMeta };
@@ -254,9 +274,9 @@ export function initLogger(
     logConfig.logSecondsBetweenMetrics = 0;
   }
   if (logConfig.logSecondsBetweenMetrics > 0) {
-    logMetrics.startAutoWrite(updates.logSecondsBetweenMetrics);
+    logInternalMetrics.startAutoWrite(updates.logSecondsBetweenMetrics);
   } else {
-    logMetrics.stopAutoWrite();
+    logInternalMetrics.stopAutoWrite();
   }
 
   logConfig = baseZodLogConfig.parse(logConfig);

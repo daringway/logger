@@ -1,4 +1,9 @@
-import { initLogger } from "../src/dare-console-logger.ts";
+import { initLogger, MetricsTracker, runInContext } from "../mod.ts";
+
+const metrics = new MetricsTracker(
+  ["processedCount"],
+  { metricFor: "testLoggerApp" },
+);
 
 // Function to generate random log messages
 function generateRandomMessage() {
@@ -62,6 +67,7 @@ function generateLogs(iterations: number) {
         console.log("Unknown log level", message, dataObject);
         break;
     }
+    metrics.increment("processedCount");
   }
 }
 
@@ -74,7 +80,8 @@ initLogger({
 
 // Run the logger test
 const numIterations = 1000; // You can adjust this number
-generateLogs(numIterations);
+runInContext({ animal: "dog" }, () => generateLogs(numIterations));
 
 console.log(`Created ${count} log messages`);
+metrics.log();
 console.log("Done with emptyLogQueueSync");

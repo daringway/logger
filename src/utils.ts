@@ -3,18 +3,16 @@ import { MetricsTracker } from "./dare-metrics.ts";
 import { logConfig } from "./dare-console-logger.ts";
 import { decodeBase64 } from "@std/encoding";
 
-export const asyncLocalStorage: AsyncLocalStorage<StoreItem> =
+export const asyncLocalStorage: AsyncLocalStorage<Record<string, any>> =
   new AsyncLocalStorage();
 
-export type TraceItem = {
-  requestId: string;
-  tracePath: string[];
-  correlationId: string;
-  sessionId: string;
-};
-
-export type StoreItem = {
-  trace: TraceItem;
+export type RequestContext = {
+  trace: {
+    requestId: string;
+    tracePath: string[];
+    correlationId: string;
+    sessionId: string;
+  };
   client: {
     userAgent: string;
     applicationName: string;
@@ -25,7 +23,6 @@ export type StoreItem = {
     path: string;
   };
   metrics?: MetricsTracker<never>;
-  // ...Record<string, unknown>;
 };
 
 // export type TraceHeaders = {
@@ -64,7 +61,7 @@ function extractSessionId(token: string | undefined): string | undefined {
 export function storeItemFromRequest(
   headers: { get(name: string): string | null },
   request: { method: string; path: string },
-): StoreItem {
+): RequestContext {
   const cookie = headers.get("cookie");
 
   let requestId = headers.get("x-request-id");

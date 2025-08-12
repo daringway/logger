@@ -4,6 +4,10 @@ import type { NextFunction, Request, Response } from "express";
 import { MetricsTracker } from "./dare-metrics.ts";
 import { asyncLocalStorage, storeItemFromRequest } from "./utils.ts";
 
+/**
+ * Options for the express logger
+ * @param doNotLogURLs - a regex to match URLs that should not be logged
+ */
 export type ExpressOptions = {
   doNotLogURLs?: RegExp;
 };
@@ -41,6 +45,11 @@ function resLogData(
   };
 }
 
+/**
+ * Add a request logger to an express app
+ * @param options
+ * @returns
+ */
 export function expressLoggerMiddleware(
   options?: ExpressOptions,
 ): (req: Request, res: Response, next: NextFunction) => void {

@@ -1,14 +1,23 @@
 import { asyncLocalStorage, storeItemFromRequest } from "./utils.ts";
 import { type Cookie, setCookie } from "@std/http";
 
+/**
+ * Options for the fresh logger
+ * @param setCookies - a list of cookies to set on the response
+ * @param doNotLogURLs - a regex to match URLs that should not be logged
+ */
 export type FreshV1Options = {
   setCookies?: Cookie[];
   doNotLogURLs?: RegExp;
 };
 
+/**
+ * Add a request logger to a fresh app
+ * @param options
+ */
 function freshV1LoggerMiddleware(
   options?: FreshV1Options,
-// deno-lint-ignore no-explicit-any
+  // deno-lint-ignore no-explicit-any
 ): (req: any, ctx: any) => Promise<Response> {
   return async (
     req,

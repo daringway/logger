@@ -24,4 +24,18 @@ export const baseZodLogConfig = z.object({
   silentInit: flexibleBoolean,
 });
 
+/**
+ * Configuration options for the logger
+ * @param logLevel - The level of logging to enable, default "log"
+ * @param logSecondsBetweenMetrics - The number of seconds between logging metrics, default 500
+ * @param logObjects - Whether to log objects, default false
+ * @param logPretty - Whether to log in pretty format, default false
+ * @param logPriorityThresholdBytes - The minimum size of the log to cache before forcing log to write, default 1 MB
+ * @param logMeta - Additional metadata to log, default null
+ * @param silentInit - Whether to suppress initialization messages, default false
+ * @example
+ * const logConfig = {
+ *   logLevel: "info",
+ }
+ */
 export type LoggingConfig = Partial<z.infer<typeof baseZodLogConfig>>;

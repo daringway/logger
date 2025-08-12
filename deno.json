@@ -16,7 +16,7 @@
       "README.md",
       "./mod.ts",
       "./src/**/*.ts"
-    ],
+    ]
   },
   "lint": {
     "rules": {
