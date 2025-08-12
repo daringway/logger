@@ -90,7 +90,16 @@ function freshV1LoggerMiddleware(
 
 export function freshV1LoggerPlugin(
   options?: FreshV1Options,
-) {
+): {
+  name: string;
+  middlewares: Array<
+    {
+      path: string;
+      // deno-lint-ignore no-explicit-any
+      middleware: { handler: (req: any, ctx: any) => Promise<Response> };
+    }
+  >;
+} {
   return {
     name: "daringwayFreshLoggerPlugin",
     middlewares: [

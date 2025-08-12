@@ -40,7 +40,7 @@ class MetricTimer {
  * @param metricNames - An array of metric names to track
  * @param config - Configuration options for the metrics tracker
  * @param config.metricFor - The name of the operation being tracked
- * @param config.writeIntervalS - The interval in seconds at which to write metrics to the console, default 180s, set to 0 to disable
+ * @param config.writeIntervalS - The interval in seconds at which to write metrics to the console, default 180, set to 0 to disable
  * @param config.elapseTimeEnabled - Whether to enable the elapse time metric, default rue
  * @returns A MetricsTracker instance
  * @example
@@ -130,9 +130,11 @@ export class MetricsTracker<T extends string> {
         Deno.unrefTimer(this.#intervalId as number);
       } else if (
         this.#intervalId &&
+        // deno-lint-ignore no-explicit-any
         typeof (this.#intervalId as any).unref === "function"
       ) {
         // Node: Timeout object has .unref()
+        // deno-lint-ignore no-explicit-any
         (this.#intervalId as any).unref();
       }
     }

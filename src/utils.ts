@@ -3,7 +3,7 @@ import { MetricsTracker } from "./dare-metrics.ts";
 import { logConfig } from "./dare-console-logger.ts";
 import { decodeBase64 } from "@std/encoding";
 
-export const asyncLocalStorage: AsyncLocalStorage<Record<string, any>> =
+export const asyncLocalStorage: AsyncLocalStorage<Record<string, unknown>> =
   new AsyncLocalStorage();
 
 export type RequestContext = {
@@ -24,14 +24,6 @@ export type RequestContext = {
   };
   metrics?: MetricsTracker<never>;
 };
-
-// export type TraceHeaders = {
-//   "x-request-id": string;
-//   "x-trace-path": string;
-//   "x-correlation-id": string | null;
-//   "x-application-name": string;
-//   "x-application-version": string;
-// };
 
 function headerArray(value: string | null) {
   if (value === undefined) {
