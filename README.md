@@ -108,37 +108,18 @@ WebStorm testing. Default: false
 LOG_PRETTY: boolean Enable pretty printing of logs for development. Use for CLI
 testing. Default: false
 
-# Log Levels
+# Log Levels Explained
 
-Level includes all previous levels. Example: warn will log metrics, error, and
-warn
+When logging use this as a guide on which level to log at. 
 
-0. metrics: Keeping tabs on the numbers and performance stats
+0. metrics: Keeping tabs on the numbers and performance stats (always logged)
 1. error: Uh-oh, something went wrong! Think of it like the 'outer safety net'
-   catching unexpected surprises.
-2. warn: Heads up! Something's not quite right, but we're still okay for now.
+   catching unexpected surprises. (always logged)
+2. warn: Heads up! Something is off, but we're still okay for now.
 3. info: Just keeping you posted—things like the service starting up or shutting
    down.
-4. log: Everyday chatter—like requests coming in and going out, nothing out of
+4. log: Everyday chatter-like requests coming in and going out, nothing out of
    the ordinary.
 5. debug: Developer-level love. The nitty-gritty details only developers adore.
 6. trace: Super-detailed breadcrumbs—like tracking function calls or variable
    values.
-
-# Exported Functions
-
-- `initLogger(config?: LoggingConfig)`: Initializes the logging system
-- `runInContext(context: RequestContext, fn: () => Promise<T>)`: Runs a function
-  within a specific request context
-- `MetricsTracker`: Class for tracking and recording metrics
-- `expressLoggerMiddleware(options?: ExpressOptions)`: Middleware for Express.js
-  applications that adds logging capabilities. Options include:
-  - `level`: Override default log level
-  - `skipPaths`: Array of paths to skip logging
-  - `logRequestBody`: Enable/disable logging request body
-  - `logResponseBody`: Enable/disable logging response body
-- `freshV1LoggerPlugin(options?: FreshV1Options)`: Plugin for Fresh V1 framework
-  that adds logging capabilities. Options include:
-  - `level`: Override default log level
-  - `skipPaths`: Array of paths to skip logging
-  - `logBody`: Enable/disable logging request/response body
