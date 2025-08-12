@@ -112,7 +112,7 @@ testing. Default: false
 
 # Log Levels Explained
 
-When logging use this as a guide on which level to log at. 
+When logging use this as a guide on which level to log at.
 
 0. metrics: Keeping tabs on the numbers and performance stats (always logged)
 1. error: Uh-oh, something went wrong! Think of it like the 'outer safety net'
