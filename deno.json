@@ -3,7 +3,11 @@
   "version": "0.0.2",
   "exports": "./mod.ts",
   "tasks": {
-    "test": "deno -A test/logTest.ts"
+    "test": "deno -A test/logTest.ts",
+    "validate": {
+      "description": "Check formating and lint",
+      "command": "deno $DENO_RUN_ARGS fmt --check && deno $DENO_RUN_ARGS lint  && deno $DENO_RUN_ARGS  check ./"
+    }
   },
   "imports": {
     "express": "npm:@types/express@^4.17.21",
