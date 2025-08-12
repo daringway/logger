@@ -25,3 +25,22 @@ jobs:
 
       - name: Run Checks (fmt, lint, check)
         run: deno task validate
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Deno 2.4
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: "v2.4"
+
+      - name: Install Dependencies
+        run: deno install
+
+      - name: Run Tests
+        run: deno task test
