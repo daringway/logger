@@ -1,5 +1,7 @@
 # Daring Way Console Logger & Metrics
 
+## What it is
+
 A drop-in logging module to enhance `console.log()` that provides the following:
 
 - All logs and metrics in JSON format to STDOUT
