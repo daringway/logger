@@ -1,4 +1,9 @@
-import { initLogger, MetricsTracker, runInContext, consoleMetrics } from "../mod.ts";
+import {
+  consoleMetrics,
+  initLogger,
+  MetricsTracker,
+  runInContext,
+} from "../mod.ts";
 
 const metrics = new MetricsTracker(
   ["processedCount"],
@@ -76,12 +81,11 @@ initLogger({
   logLevel: "trace",
   logObjects: false,
 });
-// Define the number of iterations (how many times to generate log messages)
 
 // Run the logger test
 const numIterations = 1000; // You can adjust this number
 runInContext({ animal: "dog" }, () => generateLogs(numIterations));
-consoleMetrics("acme", { boxes: 10, ramps: 1})
+consoleMetrics("acme", { boxes: 10, ramps: 1 });
 
 console.log(`Created ${count} log messages`);
 metrics.log();
