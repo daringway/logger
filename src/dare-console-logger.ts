@@ -238,6 +238,11 @@ function queueLog(logObject: LogObject) {
   }
 }
 
+/**
+ * Log a metrics object
+ * @param metricsFor name of the metrics
+ * @param metrics object
+ */
 export function consoleMetrics(metricsFor: string, metrics: Record<string,number>): void {
     const output = logFormatter("metrics", `metrics for ${metricsFor}`, { metrics: metrics });
     if (logConfig.logObjects) {
