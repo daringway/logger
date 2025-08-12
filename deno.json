@@ -1,0 +1,32 @@
+{
+  "name": "@daringway/logger",
+  "version": "0.0.3",
+  "license": "MIT",
+  "description": "A high-performance, drop-in replacement for console.log() that outputs structured JSON logs and metrics to STDOUT. Built for both Deno and Node.js, it delivers blazing-fast, non-blocking logging with optional request context, log levels, and ExpressJS/Fresh V1 integration—making it ideal for production apps that need speed, consistency, and easy observability.",
+  "exports": "./mod.ts",
+  "tasks": {
+    "test": "deno -A test/logTest.ts",
+    "validate": {
+      "description": "Check formating and lint",
+      "command": "deno $DENO_RUN_ARGS fmt --check && deno $DENO_RUN_ARGS lint  && deno $DENO_RUN_ARGS  check ./"
+    }
+  },
+  "imports": {
+    "express": "npm:@types/express@^4.17.21",
+    "@std/http": "jsr:@std/http@^1.0.9",
+    "@std/encoding": "jsr:@std/encoding@^1.0.0",
+    "zod": "npm:zod@^3.25.0"
+  },
+  "publish": {
+    "include": [
+      "README.md",
+      "./mod.ts",
+      "./src/**/*.ts"
+    ]
+  },
+  "lint": {
+    "rules": {
+      "exclude": []
+    }
+  }
+}

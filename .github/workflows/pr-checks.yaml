@@ -1,0 +1,46 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches: [main] # or any branches you want to run this action on
+
+jobs:
+  validation-checks:
+    name: Validation (fmt, lint, check)
+    runs-on: ubuntu-latest
+
+    steps:
+      #  Check out the repository
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Install Deno
+      - name: Setup Deno 2.4
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: "v2.4"
+
+      - name: Install Dependencies
+        run: deno install
+
+      - name: Run Checks (fmt, lint, check)
+        run: deno task validate
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Deno 2.4
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: "v2.4"
+
+      - name: Install Dependencies
+        run: deno install
+
+      - name: Run Tests
+        run: deno task test
