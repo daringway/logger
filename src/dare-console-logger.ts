@@ -3,7 +3,7 @@
 import OptimizedQueue from "./optimized-queue.ts";
 import process from "node:process";
 import { MetricsTracker } from "./dare-metrics.ts";
-import { asyncLocalStorage } from "./utils.ts";
+import { asyncLocalStorage, safeStringify } from "./utils.ts";
 import { baseZodLogConfig, type LoggingConfig } from "./zod.ts";
 
 let initialized = false;
@@ -189,7 +189,7 @@ const logFormatter = (
     if (part instanceof Error) {
       error = {
         message: part.message || part.name,
-        data: JSON.parse(JSON.stringify(part)),
+        data: JSON.parse(safeStringify(part)),
         stack: part.stack ? part.stack.split("\n") : [],
       };
     } else if (!message && typeof part === "string") {
@@ -229,9 +229,9 @@ const logFormatter = (
 
 function queueLog(logObject: LogObject) {
   if (logConfig.logPretty) {
-    origLog(JSON.stringify(logObject, null, 2));
+    origLog(safeStringify(logObject,  2));
   } else {
-    logQueue.enqueue(JSON.stringify(logObject) + "\n");
+    logQueue.enqueue(safeStringify(logObject) + "\n");
     if (!isFlushing && !flushTimeout) {
       flushTimeout = setTimeout(flushLogQueue, 0);
     }
