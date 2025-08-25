@@ -1,10 +1,10 @@
 // deno-lint-ignore-file no-explicit-any
 // noinspection JSUnusedGlobalSymbols
-import OptimizedQueue from "./optimized-queue.ts";
+import OptimizedQueue from "./optimized-queue.js";
 import process from "node:process";
-import { MetricsTracker } from "./dare-metrics.ts";
-import { asyncLocalStorage, safeStringify } from "./utils.ts";
-import { baseZodLogConfig, type LoggingConfig } from "./zod.ts";
+import { MetricsTracker } from "./dare-metrics.js";
+import { asyncLocalStorage, safeStringify } from "./utils.js";
+import { baseZodLogConfig, type LoggingConfig } from "./zod.js";
 
 let initialized = false;
 
@@ -39,7 +39,7 @@ interface LogObject {
 
 // set defaults
 const defaultValues = {
-  logLevel: process.env.LOG_LEVEL ?? "log",
+  logLevel: process.env.LOG_OBJECTS ?? "log",
   logSecondsBetweenMetrics: process.env.LOG_SECONDS_BETWEEN_METRICS ?? 500,
   logPriorityThresholdBytes: 1024 * 1024, // 1 MB
   logMeta: null,

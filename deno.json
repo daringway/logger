@@ -9,13 +9,17 @@
     "validate": {
       "description": "Check formating and lint",
       "command": "deno $DENO_RUN_ARGS fmt --check && deno $DENO_RUN_ARGS lint  && deno $DENO_RUN_ARGS  check ./"
-    }
+    },
+    "publish:jsr": "deno publish",
+    "build:npm": "deno run -A scripts/build_npm.ts",
+    "publish:npm": "cd npm && npm publish --access public"
   },
   "imports": {
+    "@deno/dnt": "jsr:@deno/dnt@^0.42.3",
     "express": "npm:@types/express@^4.17.21",
     "@std/http": "jsr:@std/http@^1.0.9",
     "@std/encoding": "jsr:@std/encoding@^1.0.0",
-    "zod": "npm:zod@^3.25.0"
+    "zod": "npm:zod@^3.25.0",
   },
   "publish": {
     "include": [

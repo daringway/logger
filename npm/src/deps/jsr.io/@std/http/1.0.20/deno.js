@@ -1,0 +1,19 @@
+export default {
+  "name": "@std/http",
+  "version": "1.0.20",
+  "exports": {
+    ".": "./mod.ts",
+    "./cookie": "./cookie.ts",
+    "./etag": "./etag.ts",
+    "./file-server": "./file_server.ts",
+    "./unstable-file-server": "./unstable_file_server.ts",
+    "./unstable-header": "./unstable_header.ts",
+    "./unstable-method": "./unstable_method.ts",
+    "./negotiation": "./negotiation.ts",
+    "./server-sent-event-stream": "./server_sent_event_stream.ts",
+    "./status": "./status.ts",
+    "./unstable-signed-cookie": "./unstable_signed_cookie.ts",
+    "./user-agent": "./user_agent.ts",
+    "./unstable-route": "./unstable_route.ts"
+  }
+};
