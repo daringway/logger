@@ -1,6 +1,6 @@
 {
   "name": "@daringway/logger",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "license": "MIT",
   "description": "A high-performance, drop-in replacement for console.log() that outputs structured JSON logs and metrics to STDOUT. Built for both Deno and Node.js, it delivers blazing-fast, non-blocking logging with optional request context, log levels, and ExpressJS/Fresh V1 integration—making it ideal for production apps that need speed, consistency, and easy observability.",
   "exports": "./mod.ts",

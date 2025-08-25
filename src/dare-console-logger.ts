@@ -39,13 +39,13 @@ interface LogObject {
 
 // set defaults
 const defaultValues = {
-  logLevel: process.env.LOG_LEVEL ?? "log",
-  logSecondsBetweenMetrics: process.env.LOG_SECONDS_BETWEEN_METRICS ?? 500,
+  logLevel:"log",
+  logSecondsBetweenMetrics: 500,
   logPriorityThresholdBytes: 1024 * 1024, // 1 MB
   logMeta: null,
-  logObjects: process.env.LOG_OBJECTS ?? false,
-  logPretty: process.env.LOG_PRETTY ?? false,
-  logWithConsole: process.env.LOG_WITH_CONSOLE ?? false,
+  logObjects: false,
+  logPretty: false,
+  logWithConsole: false,
 }
 
 export let logConfig = baseZodLogConfig.parse(defaultValues);
@@ -193,8 +193,12 @@ const logFormatter = (
         data: JSON.parse(JSON.stringify(part)),
         stack: part.stack ? part.stack.split("\n") : [],
       };
-    } else if (!message && typeof part === "string") {
-      message = part;
+    } else if (typeof part === "string") {
+      if (message) {
+        message += ' ' + part;
+      } else {
+        message = part;
+      }
     } else if (
       part !== null &&
       typeof part === "object" &&
@@ -268,14 +272,19 @@ export function initLogger(
   configuration: Partial<LoggingConfig> = {},
 ): void {
   const updates = baseZodLogConfig.partial().parse(configuration);
-  const newMeta = { ...logConfig.logMeta, ...updates.logMeta };
-  Object.assign(logConfig, updates);
-  logConfig.logMeta = newMeta;
+  const newConfig = {
+    logLevel: process.env.LOG_LEVEL ?? updates.logLevel ?? logConfig.logLevel,
+    logSecondsBetweenMetrics: Number(process.env.LOG_SECONDS_BETWEEN_METRICS) ?? updates.logSecondsBetweenMetrics ?? logConfig.logSecondsBetweenMetrics,
+    logPriorityThresholdBytes: Number(process.env.LOG_PRIORITY_THRESHOLD_BYTES) ?? updates.logPriorityThresholdBytes ?? logConfig.logPriorityThresholdBytes,
+    logMeta: {...logConfig.logMeta, ...updates.logMeta},
+    logObjects: process.env.LOG_OBJECTS ?? updates.logObjects ?? logConfig.logObjects,
+    logPretty: process.env.LOG_PRETTY ?? updates.logPretty ?? logConfig.logPretty,
+    logWithConsole: process.env.LOG_WITH_CONSOLE ?? updates.logWithConsole ?? logConfig.logWithConsole,
+  };
 
-  if (updates.logLevel) {
-    logConfig.logLevel = updates.logLevel;
-    logLevelValue = logLevels[logConfig.logLevel];
-  }
+  logConfig = baseZodLogConfig.partial().parse(newConfig);
+  Object.assign(logConfig, newConfig);
+  logLevelValue = logLevels[logConfig.logLevel];
 
   if (logConfig.logMeta && Object.keys(logConfig.logMeta).length === 0) {
     logConfig.logMeta = null;
