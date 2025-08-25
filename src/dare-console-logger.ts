@@ -39,7 +39,7 @@ interface LogObject {
 
 // set defaults
 const defaultValues = {
-  logLevel: process.env.LOG_OBJECTS ?? "log",
+  logLevel: process.env.LOG_LEVEL ?? "log",
   logSecondsBetweenMetrics: process.env.LOG_SECONDS_BETWEEN_METRICS ?? 500,
   logPriorityThresholdBytes: 1024 * 1024, // 1 MB
   logMeta: null,
