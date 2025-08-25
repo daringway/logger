@@ -282,8 +282,7 @@ export function initLogger(
     logWithConsole: process.env.LOG_WITH_CONSOLE ?? updates.logWithConsole ?? logConfig.logWithConsole,
   };
 
-  logConfig = baseZodLogConfig.partial().parse(newConfig);
-  Object.assign(logConfig, newConfig);
+  logConfig = baseZodLogConfig.parse(newConfig);
   logLevelValue = logLevels[logConfig.logLevel];
 
   if (logConfig.logMeta && Object.keys(logConfig.logMeta).length === 0) {
