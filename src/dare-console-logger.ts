@@ -45,7 +45,8 @@ const defaultValues = {
   logMeta: null,
   logObjects: process.env.LOG_OBJECTS ?? false,
   logPretty: process.env.LOG_PRETTY ?? false,
-};
+  logWithConsole: process.env.LOG_WITH_CONSOLE ?? false,
+}
 
 export let logConfig = baseZodLogConfig.parse(defaultValues);
 let logLevelValue = logLevels[logConfig.logLevel];
@@ -228,8 +229,10 @@ const logFormatter = (
 };
 
 function queueLog(logObject: LogObject) {
-  if (logConfig.logPretty) {
-    origLog(JSON.stringify(logObject, null, 2));
+  if (logConfig.logPretty ) {
+    origLog(JSON.stringify(logObject, undefined, 2));
+  } else if (logConfig.logWithConsole) {
+    origLog(JSON.stringify(logObject));
   } else {
     logQueue.enqueue(JSON.stringify(logObject) + "\n");
     if (!isFlushing && !flushTimeout) {

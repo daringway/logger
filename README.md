@@ -110,6 +110,8 @@ WebStorm testing. Default: false
 LOG_PRETTY: boolean Enable pretty printing of logs for development. Use for CLI
 testing. Default: false
 
+LOG_WITH_CONSOLE: boolean Enable logging to console. Default: false, writes to STDOUT
+
 # Log Levels Explained
 
 When logging use this as a guide on which level to log at.
