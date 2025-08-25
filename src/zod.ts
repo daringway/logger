@@ -19,6 +19,7 @@ export const baseZodLogConfig = z.object({
   logSecondsBetweenMetrics: z.coerce.number().min(0),
   logObjects: flexibleBoolean,
   logPretty: flexibleBoolean,
+  logWithConsole: flexibleBoolean,
   logPriorityThresholdBytes: z.number().min(10),
   logMeta: z.record(z.string(), z.string()).nullable(),
   silentInit: flexibleBoolean,
