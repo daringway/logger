@@ -274,8 +274,8 @@ export function initLogger(
   const updates = baseZodLogConfig.partial().parse(configuration);
   const newConfig = {
     logLevel: process.env.LOG_LEVEL ?? updates.logLevel ?? logConfig.logLevel,
-    logSecondsBetweenMetrics: Number(process.env.LOG_SECONDS_BETWEEN_METRICS) ?? updates.logSecondsBetweenMetrics ?? logConfig.logSecondsBetweenMetrics,
-    logPriorityThresholdBytes: Number(process.env.LOG_PRIORITY_THRESHOLD_BYTES) ?? updates.logPriorityThresholdBytes ?? logConfig.logPriorityThresholdBytes,
+    logSecondsBetweenMetrics: process.env.LOG_SECONDS_BETWEEN_METRICS ?? updates.logSecondsBetweenMetrics ?? logConfig.logSecondsBetweenMetrics,
+    logPriorityThresholdBytes: process.env.LOG_PRIORITY_THRESHOLD_BYTES ?? updates.logPriorityThresholdBytes ?? logConfig.logPriorityThresholdBytes,
     logMeta: {...logConfig.logMeta, ...updates.logMeta},
     logObjects: process.env.LOG_OBJECTS ?? updates.logObjects ?? logConfig.logObjects,
     logPretty: process.env.LOG_PRETTY ?? updates.logPretty ?? logConfig.logPretty,
