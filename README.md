@@ -92,6 +92,14 @@ export default defineConfig({
 });
 ```
 
+Notes:
+
+- `logStaticRequestsAtStart` defaults to `true` and emits start logs for likely
+  static paths (for visibility when response hooks are not fired for those
+  requests).
+- In development, some asset requests may be served directly by the Vite dev
+  server and bypass SolidStart middleware entirely.
+
 ## Request Context Information
 
 ```typescript

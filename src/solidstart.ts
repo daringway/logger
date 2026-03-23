@@ -6,6 +6,10 @@ import { asyncLocalStorage, storeItemFromRequest } from "./utils.ts";
  */
 export type SolidStartOptions = {
   doNotLogURLs?: RegExp;
+  /**
+   * When omitted, defaults to true.
+   */
+  logStaticRequestsAtStart?: boolean;
 };
 
 type HJson =
@@ -70,6 +74,16 @@ function resLogData(
   };
 }
 
+function isLikelyStaticRequest(pathname: string): boolean {
+  if (
+    pathname.startsWith("/assets/") || pathname.startsWith("/_build/") ||
+    pathname.startsWith("/public/")
+  ) {
+    return true;
+  }
+  return /\.[a-zA-Z0-9]{1,8}$/.test(pathname);
+}
+
 /**
  * Add request/response logging hooks for SolidStart middleware.
  * Use with: createMiddleware(solidStartLoggerMiddleware()).
@@ -81,12 +95,19 @@ export function solidStartLoggerMiddleware(
   onRequest: (event: SolidStartLikeEvent) => void;
   onBeforeResponse: (event: SolidStartLikeEvent) => void;
 } {
+  const resolvedOptions:
+    & Required<Pick<SolidStartOptions, "logStaticRequestsAtStart">>
+    & Omit<SolidStartOptions, "logStaticRequestsAtStart"> = {
+      logStaticRequestsAtStart: true,
+      ...options,
+    };
+
   return {
     onRequest: (event: SolidStartLikeEvent): void => {
       const req = event.request;
       const url = event.url ?? new URL(req.url);
 
-      if (options?.doNotLogURLs?.test(url.pathname)) {
+      if (resolvedOptions.doNotLogURLs?.test(url.pathname)) {
         requestState.set(req, {
           skip: true,
           path: url.pathname,
@@ -125,18 +146,42 @@ export function solidStartLoggerMiddleware(
         storeItem,
       });
 
-      console.trace(() => {
-        return [
-          `api request start ${url.pathname}`,
-          {
-            type: "request",
-            request: {
-              method: req.method,
-              url: req.url,
+      if (
+        resolvedOptions.logStaticRequestsAtStart &&
+        isLikelyStaticRequest(url.pathname)
+      ) {
+        asyncLocalStorage.run(storeItem, () => {
+          console.info(
+            `request start ${req.method} ${url.pathname}`,
+            {
+              type: "api_call",
+              status: "start",
+              request: {
+                method: req.method,
+                path: url.pathname,
+                search: url.search,
+              },
+              response: {
+                statusMessage: "pending",
+                statusCode: "pending",
+              },
             },
-          },
-        ];
-      });
+          );
+        });
+      } else {
+        console.trace(() => {
+          return [
+            `api request start ${url.pathname}`,
+            {
+              type: "request",
+              request: {
+                method: req.method,
+                url: req.url,
+              },
+            },
+          ];
+        });
+      }
     },
     onBeforeResponse: (event: SolidStartLikeEvent): void => {
       const req = event.request;
@@ -144,7 +189,7 @@ export function solidStartLoggerMiddleware(
 
       if (!state) {
         const url = event.url ?? new URL(req.url);
-        if (options?.doNotLogURLs?.test(url.pathname)) {
+        if (resolvedOptions.doNotLogURLs?.test(url.pathname)) {
           return;
         }
         const storeItem = storeItemFromRequest(
@@ -169,6 +214,7 @@ export function solidStartLoggerMiddleware(
         "x-request-id",
         state.requestId,
       );
+      requestState.delete(req);
 
       const logFn = response.status >= 500 ? console.error : console.info;
       const levelStatus = response.status >= 500 ? "error" : "success";

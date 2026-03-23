@@ -157,6 +157,15 @@ For logger config (`initLogger`), values are resolved in this order:
 - Notes: skip logging for matching request path
 - Source: `src/solidstart.ts`
 
+### logStaticRequestsAtStart (solidstart)
+
+- Scope: SolidStart middleware
+- Type: `boolean`
+- Default: `true`
+- Notes: logs likely static requests at request-start (`info`) to improve
+  visibility when response hooks are skipped
+- Source: `src/solidstart.ts`
+
 ## Request Context Inputs (Header/Cookie Driven)
 
 ### x-request-id
