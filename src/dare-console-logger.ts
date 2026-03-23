@@ -39,14 +39,14 @@ interface LogObject {
 
 // set defaults
 const defaultValues = {
-  logLevel:"log",
+  logLevel: "log",
   logSecondsBetweenMetrics: 500,
   logPriorityThresholdBytes: 1024 * 1024, // 1 MB
   logMeta: null,
   logObjects: false,
   logPretty: false,
   logWithConsole: false,
-}
+};
 
 export let logConfig = baseZodLogConfig.parse(defaultValues);
 let logLevelValue = logLevels[logConfig.logLevel];
@@ -195,7 +195,7 @@ const logFormatter = (
       };
     } else if (typeof part === "string") {
       if (message) {
-        message += ' ' + part;
+        message += " " + part;
       } else {
         message = part;
       }
@@ -233,7 +233,7 @@ const logFormatter = (
 };
 
 function queueLog(logObject: LogObject) {
-  if (logConfig.logPretty ) {
+  if (logConfig.logPretty) {
     origLog(JSON.stringify(logObject, undefined, 2));
   } else if (logConfig.logWithConsole) {
     origLog(JSON.stringify(logObject));
@@ -274,12 +274,17 @@ export function initLogger(
   const updates = baseZodLogConfig.partial().parse(configuration);
   const newConfig = {
     logLevel: process.env.LOG_LEVEL ?? updates.logLevel ?? logConfig.logLevel,
-    logSecondsBetweenMetrics: process.env.LOG_SECONDS_BETWEEN_METRICS ?? updates.logSecondsBetweenMetrics ?? logConfig.logSecondsBetweenMetrics,
-    logPriorityThresholdBytes: process.env.LOG_PRIORITY_THRESHOLD_BYTES ?? updates.logPriorityThresholdBytes ?? logConfig.logPriorityThresholdBytes,
-    logMeta: {...logConfig.logMeta, ...updates.logMeta},
-    logObjects: process.env.LOG_OBJECTS ?? updates.logObjects ?? logConfig.logObjects,
-    logPretty: process.env.LOG_PRETTY ?? updates.logPretty ?? logConfig.logPretty,
-    logWithConsole: process.env.LOG_WITH_CONSOLE ?? updates.logWithConsole ?? logConfig.logWithConsole,
+    logSecondsBetweenMetrics: process.env.LOG_SECONDS_BETWEEN_METRICS ??
+      updates.logSecondsBetweenMetrics ?? logConfig.logSecondsBetweenMetrics,
+    logPriorityThresholdBytes: process.env.LOG_PRIORITY_THRESHOLD_BYTES ??
+      updates.logPriorityThresholdBytes ?? logConfig.logPriorityThresholdBytes,
+    logMeta: { ...logConfig.logMeta, ...updates.logMeta },
+    logObjects: process.env.LOG_OBJECTS ?? updates.logObjects ??
+      logConfig.logObjects,
+    logPretty: process.env.LOG_PRETTY ?? updates.logPretty ??
+      logConfig.logPretty,
+    logWithConsole: process.env.LOG_WITH_CONSOLE ?? updates.logWithConsole ??
+      logConfig.logWithConsole,
   };
 
   logConfig = baseZodLogConfig.parse(newConfig);
