@@ -20,20 +20,18 @@ type HJson =
 type SolidStartLikeEvent = {
   request: Request;
   response: Response;
-  locals?: Record<string, unknown>;
   url?: URL;
 };
-
-const SOLIDSTART_LOGGER_STATE = "__daringwayLogger";
 
 type SolidStartLoggerState = {
   skip: boolean;
   path: string;
-  requestUrl: string;
   requestMethod: string;
   requestId: string;
   storeItem?: ReturnType<typeof storeItemFromRequest>;
 };
+
+const requestState = new WeakMap<Request, SolidStartLoggerState>();
 
 function withHeader(response: Response, key: string, value: string): Response {
   try {
@@ -48,29 +46,6 @@ function withHeader(response: Response, key: string, value: string): Response {
       headers,
     });
   }
-}
-
-function setLoggerState(
-  event: SolidStartLikeEvent,
-  state: SolidStartLoggerState,
-): void {
-  if (!event.locals) {
-    event.locals = {};
-  }
-  event.locals[SOLIDSTART_LOGGER_STATE] = state;
-}
-
-function getLoggerState(
-  event: SolidStartLikeEvent,
-): SolidStartLoggerState | null {
-  if (!event.locals) {
-    return null;
-  }
-  const state = event.locals[SOLIDSTART_LOGGER_STATE];
-  if (!state || typeof state !== "object") {
-    return null;
-  }
-  return state as SolidStartLoggerState;
 }
 
 function resLogData(
@@ -112,10 +87,9 @@ export function solidStartLoggerMiddleware(
       const url = event.url ?? new URL(req.url);
 
       if (options?.doNotLogURLs?.test(url.pathname)) {
-        setLoggerState(event, {
+        requestState.set(req, {
           skip: true,
           path: url.pathname,
-          requestUrl: req.url,
           requestMethod: req.method,
           requestId: "",
         });
@@ -143,10 +117,9 @@ export function solidStartLoggerMiddleware(
         storeItem.trace.requestId,
       );
 
-      setLoggerState(event, {
+      requestState.set(req, {
         skip: false,
         path: url.pathname,
-        requestUrl: req.url,
         requestMethod: req.method,
         requestId: storeItem.trace.requestId,
         storeItem,
@@ -166,12 +139,31 @@ export function solidStartLoggerMiddleware(
       });
     },
     onBeforeResponse: (event: SolidStartLikeEvent): void => {
-      const state = getLoggerState(event);
+      const req = event.request;
+      let state = requestState.get(req);
+
+      if (!state) {
+        const url = event.url ?? new URL(req.url);
+        if (options?.doNotLogURLs?.test(url.pathname)) {
+          return;
+        }
+        const storeItem = storeItemFromRequest(
+          req.headers,
+          { method: req.method, path: url.pathname },
+        );
+        state = {
+          skip: false,
+          path: url.pathname,
+          requestMethod: req.method,
+          requestId: storeItem.trace.requestId,
+          storeItem,
+        };
+      }
+
       if (!state || state.skip) {
         return;
       }
 
-      const req = event.request;
       const response = withHeader(
         event.response,
         "x-request-id",

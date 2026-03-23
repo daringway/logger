@@ -82,6 +82,16 @@ initLogger();
 export default createMiddleware(solidStartLoggerMiddleware());
 ```
 
+And make sure your SolidStart config points to that middleware file:
+
+```typescript
+import { defineConfig } from "@solidjs/start/config";
+
+export default defineConfig({
+  middleware: "src/middleware/index.ts",
+});
+```
+
 ## Request Context Information
 
 ```typescript
