@@ -166,6 +166,17 @@ For logger config (`initLogger`), values are resolved in this order:
   visibility when response hooks are skipped
 - Source: `src/solidstart.ts`
 
+### SolidStart Static/Image Request Visibility
+
+- `solidStartLoggerMiddleware` only logs requests that execute SolidStart
+  middleware hooks.
+- Requests served directly by Vite dev server or a static/CDN layer bypass these
+  hooks and will not be logged by this package.
+- Recommended dev setup: add a Vite `configureServer` middleware logger in
+  `app.config.ts` for full static/image request visibility.
+- Recommended production setup: use static-layer logs (CDN/proxy/load balancer)
+  for image/static traffic.
+
 ## Request Context Inputs (Header/Cookie Driven)
 
 ### x-request-id

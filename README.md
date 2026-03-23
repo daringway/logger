@@ -97,8 +97,41 @@ Notes:
 - `logStaticRequestsAtStart` defaults to `true` and emits start logs for likely
   static paths (for visibility when response hooks are not fired for those
   requests).
-- In development, some asset requests may be served directly by the Vite dev
+- In development, some image/static requests are served directly by the Vite dev
   server and bypass SolidStart middleware entirely.
+
+### SolidStart Static Assets and Images
+
+`solidStartLoggerMiddleware()` can only log requests that pass through
+SolidStart middleware lifecycle hooks. If a request is handled directly by Vite
+(dev) or a static/CDN layer (prod), it will not appear in middleware logs.
+
+For development visibility of image/static requests, add a Vite dev middleware
+logger in `app.config.ts`:
+
+```typescript
+import { defineConfig } from "@solidjs/start/config";
+
+export default defineConfig({
+  middleware: "src/middleware/index.ts",
+  vite: {
+    plugins: [
+      {
+        name: "daringway-vite-request-logger",
+        configureServer(server) {
+          server.middlewares.use((req, _res, next) => {
+            console.info(`[vite] ${req.method} ${req.url}`);
+            next();
+          });
+        },
+      },
+    ],
+  },
+});
+```
+
+In production, collect static/image request logs from your edge/static serving
+layer (for example CDN, load balancer, or reverse proxy).
 
 ## Request Context Information
 
