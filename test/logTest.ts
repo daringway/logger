@@ -77,7 +77,7 @@ function generateLogs(iterations: number) {
 }
 
 initLogger({
-  logSecondsBetweenMetrics: 15,
+  logSecondsBetweenMetrics: 0,
   logLevel: "trace",
   logObjects: false,
 });

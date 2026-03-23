@@ -19,7 +19,20 @@ type HJson =
 
 type SolidStartLikeEvent = {
   request: Request;
+  response: Response;
+  locals?: Record<string, unknown>;
   url?: URL;
+};
+
+const SOLIDSTART_LOGGER_STATE = "__daringwayLogger";
+
+type SolidStartLoggerState = {
+  skip: boolean;
+  path: string;
+  requestUrl: string;
+  requestMethod: string;
+  requestId: string;
+  storeItem?: ReturnType<typeof storeItemFromRequest>;
 };
 
 function withHeader(response: Response, key: string, value: string): Response {
@@ -37,9 +50,32 @@ function withHeader(response: Response, key: string, value: string): Response {
   }
 }
 
+function setLoggerState(
+  event: SolidStartLikeEvent,
+  state: SolidStartLoggerState,
+): void {
+  if (!event.locals) {
+    event.locals = {};
+  }
+  event.locals[SOLIDSTART_LOGGER_STATE] = state;
+}
+
+function getLoggerState(
+  event: SolidStartLikeEvent,
+): SolidStartLoggerState | null {
+  if (!event.locals) {
+    return null;
+  }
+  const state = event.locals[SOLIDSTART_LOGGER_STATE];
+  if (!state || typeof state !== "object") {
+    return null;
+  }
+  return state as SolidStartLoggerState;
+}
+
 function resLogData(
   req: Request,
-  response: Response | null,
+  response: Response,
   path: string,
   status: string,
 ): Record<string, HJson> {
@@ -53,41 +89,69 @@ function resLogData(
       search: url.search,
     },
     response: {
-      statusMessage: response?.statusText || "unknown",
-      statusCode: response?.status || "unknown",
+      statusMessage: response.statusText || "unknown",
+      statusCode: response.status || "unknown",
     },
   };
 }
 
 /**
- * Add a request logger middleware for SolidStart server middleware pipelines.
+ * Add request/response logging hooks for SolidStart middleware.
+ * Use with: createMiddleware(solidStartLoggerMiddleware()).
  * @param options
  */
 export function solidStartLoggerMiddleware(
   options?: SolidStartOptions,
-): (
-  event: SolidStartLikeEvent,
-  next: () => Promise<Response>,
-) => Promise<Response> {
-  return async (
-    event: SolidStartLikeEvent,
-    next: () => Promise<Response>,
-  ): Promise<Response> => {
-    const req = event.request;
-    const url = event.url ?? new URL(req.url);
+): {
+  onRequest: (event: SolidStartLikeEvent) => void;
+  onBeforeResponse: (event: SolidStartLikeEvent) => void;
+} {
+  return {
+    onRequest: (event: SolidStartLikeEvent): void => {
+      const req = event.request;
+      const url = event.url ?? new URL(req.url);
 
-    if (options?.doNotLogURLs?.test(url.pathname)) {
-      return await next();
-    }
+      if (options?.doNotLogURLs?.test(url.pathname)) {
+        setLoggerState(event, {
+          skip: true,
+          path: url.pathname,
+          requestUrl: req.url,
+          requestMethod: req.method,
+          requestId: "",
+        });
+        return;
+      }
 
-    const storeItem = storeItemFromRequest(
-      req.headers,
-      { method: req.method, path: url.pathname },
-    );
+      const storeItem = storeItemFromRequest(
+        req.headers,
+        { method: req.method, path: url.pathname },
+      );
 
-    let response: Response | null = null;
+      if (
+        typeof (asyncLocalStorage as { enterWith?: (store: unknown) => void })
+          .enterWith === "function"
+      ) {
+        (asyncLocalStorage as { enterWith: (store: unknown) => void })
+          .enterWith(
+            storeItem,
+          );
+      }
 
-    await asyncLocalStorage.run(storeItem, async () => {
+      event.response = withHeader(
+        event.response,
+        "x-request-id",
+        storeItem.trace.requestId,
+      );
+
+      setLoggerState(event, {
+        skip: false,
+        path: url.pathname,
+        requestUrl: req.url,
+        requestMethod: req.method,
+        requestId: storeItem.trace.requestId,
+        storeItem,
+      });
+
       console.trace(() => {
         return [
           `api request start ${url.pathname}`,
@@ -100,36 +164,37 @@ export function solidStartLoggerMiddleware(
           },
         ];
       });
-
-      try {
-        response = await next();
-        response = withHeader(
-          response,
-          "x-request-id",
-          storeItem.trace.requestId,
-        );
-
-        console.info(
-          `request end ${req.method} ${url.pathname}`,
-          { metrics: storeItem.metrics?.getMetrics() || {} },
-          resLogData(req, response, url.pathname, "success"),
-        );
-      } catch (error) {
-        console.error(
-          `request end error ${url.pathname}`,
-          resLogData(req, response, url.pathname, "error"),
-          { metrics: storeItem.metrics?.getMetrics() || {} },
-          {
-            javascriptError: {
-              message: error instanceof Error ? error.message : String(error),
-              data: JSON.parse(JSON.stringify(error)),
-              stack: error instanceof Error ? error.stack : "no stack trace",
-            },
-          },
-        );
-        throw error;
+    },
+    onBeforeResponse: (event: SolidStartLikeEvent): void => {
+      const state = getLoggerState(event);
+      if (!state || state.skip) {
+        return;
       }
-    });
-    return response!;
+
+      const req = event.request;
+      const response = withHeader(
+        event.response,
+        "x-request-id",
+        state.requestId,
+      );
+
+      const logFn = response.status >= 500 ? console.error : console.info;
+      const levelStatus = response.status >= 500 ? "error" : "success";
+
+      if (state.storeItem) {
+        asyncLocalStorage.run(state.storeItem, () => {
+          logFn(
+            `request end ${state.requestMethod} ${state.path}`,
+            { metrics: state.storeItem?.metrics?.getMetrics() || {} },
+            resLogData(req, response, state.path, levelStatus),
+          );
+        });
+      } else {
+        logFn(
+          `request end ${state.requestMethod} ${state.path}`,
+          resLogData(req, response, state.path, levelStatus),
+        );
+      }
+    },
   };
 }

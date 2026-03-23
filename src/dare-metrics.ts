@@ -40,7 +40,7 @@ class MetricTimer {
  * @param metricNames - An array of metric names to track
  * @param config - Configuration options for the metrics tracker
  * @param config.metricFor - The name of the operation being tracked
- * @param config.writeIntervalS - The interval in seconds at which to write metrics to the console, default 180, set to 0 to disable
+ * @param config.writeIntervalS - The interval in seconds at which to write metrics to the console, default 0 (disabled), set >0 to enable
  * @param config.elapseTimeEnabled - Whether to enable the elapse time metric, default rue
  * @returns A MetricsTracker instance
  * @example
@@ -51,7 +51,7 @@ export class MetricsTracker<T extends string> {
   #intervalId: ReturnType<typeof setInterval> | null = null;
   #config: MetricsConfig = {
     metricFor: "unknown",
-    writeIntervalS: 180, // default is every minute 3
+    writeIntervalS: 0, // disabled by default
     elapseTimeEnabled: true,
   };
   private elapseTimeTimer: MetricTimer | null = null;
@@ -123,12 +123,6 @@ export class MetricsTracker<T extends string> {
 
       // Allow the process to exit if nothing else is pending
       if (
-        typeof Deno !== "undefined" &&
-        typeof Deno.unrefTimer === "function"
-      ) {
-        // Deno: interval id is a number
-        Deno.unrefTimer(this.#intervalId as number);
-      } else if (
         this.#intervalId &&
         // deno-lint-ignore no-explicit-any
         typeof (this.#intervalId as any).unref === "function"

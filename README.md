@@ -37,7 +37,7 @@ Start logging with `console.error`, `console.warn`, `console.log`,
 
 # App Server Support
 
-Preconfigured support for ExpressJS, Fresh V1, Hono, and SolidStart provides the
+Preconfigured support for ExpressJS, Hono, and SolidStart provides the
 following:
 
 - Metrics (Request and Logger)
@@ -55,23 +55,6 @@ const app: Express = express();
 
 // Set this up first, it registers the logger onFinsih and starts the metrics timer
 app.use(expressLoggerMiddleware());
-```
-
-## Fresh V1 Configuration
-
-In `fresh.config.ts`
-
-```javascript
-import { freshV1LoggerPlugin, initLogger } from "@daringway/logger";
-
-initLogger();
-
-export default defineConfig({
-  plugins: [
-    tailwind(),
-    freshV1LoggerPlugin(),
-  ],
-});
 ```
 
 ## Hono Configuration
@@ -96,9 +79,7 @@ import { initLogger, solidStartLoggerMiddleware } from "@daringway/logger";
 
 initLogger();
 
-export default createMiddleware({
-  onRequest: solidStartLoggerMiddleware(),
-});
+export default createMiddleware(solidStartLoggerMiddleware());
 ```
 
 ## Request Context Information
@@ -130,7 +111,7 @@ LOG_LEVEL: "error" | "warn" | "info" | "log" | "debug" | "trace" Sets the
 logging level. error and metrics will always log. Default: "log"
 
 LOG_SECONDS_BETWEEN_METRICS: number Number of seconds between automatic metrics
-logging. Default: 500
+logging. Default: 0 (disabled)
 
 LOG_OBJECTS: boolean Enable logging of full objects in trace logs. Use for
 WebStorm testing. Default: false

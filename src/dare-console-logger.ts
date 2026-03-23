@@ -40,7 +40,7 @@ interface LogObject {
 // set defaults
 const defaultValues = {
   logLevel: "log",
-  logSecondsBetweenMetrics: 500,
+  logSecondsBetweenMetrics: 0,
   logPriorityThresholdBytes: 1024 * 1024, // 1 MB
   logMeta: null,
   logObjects: false,
@@ -300,7 +300,7 @@ export function initLogger(
     logConfig.logSecondsBetweenMetrics = 0;
   }
   if (logConfig.logSecondsBetweenMetrics > 0) {
-    logInternalMetrics.startAutoWrite(updates.logSecondsBetweenMetrics);
+    logInternalMetrics.startAutoWrite(logConfig.logSecondsBetweenMetrics);
   } else {
     logInternalMetrics.stopAutoWrite();
   }

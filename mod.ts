@@ -5,7 +5,6 @@ export {
 } from "./src/dare-console-logger.ts";
 export { MetricsTracker } from "./src/dare-metrics.ts";
 export { expressLoggerMiddleware, type ExpressOptions } from "./src/express.ts";
-export { freshV1LoggerPlugin, type FreshV1Options } from "./src/fresh.ts";
 export { honoLoggerMiddleware, type HonoOptions } from "./src/hono.ts";
 export {
   solidStartLoggerMiddleware,

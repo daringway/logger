@@ -27,9 +27,9 @@ For logger config (`initLogger`), values are resolved in this order:
 
 - Scope: logger
 - Type: number (`>= 0`)
-- Default: `500`
+- Default: `0` (disabled)
 - Env override: `LOG_SECONDS_BETWEEN_METRICS`
-- Notes: `0` disables periodic metrics writes
+- Notes: `0` disables periodic metrics writes; set to `> 0` to enable
 - Source: `src/zod.ts`, `src/dare-console-logger.ts`
 
 ### logPriorityThresholdBytes
@@ -136,24 +136,6 @@ For logger config (`initLogger`), values are resolved in this order:
 - Default: unset
 - Notes: skip logging for matching `req.originalUrl`
 - Source: `src/express.ts`
-
-## Fresh Middleware Settings (`freshV1LoggerPlugin`)
-
-### setCookies (fresh)
-
-- Scope: Fresh middleware
-- Type: `Cookie[]`
-- Default: unset
-- Notes: additional cookies appended to response
-- Source: `src/fresh.ts`
-
-### doNotLogURLs (fresh)
-
-- Scope: Fresh middleware
-- Type: `RegExp`
-- Default: unset
-- Notes: skip logging for matching route path
-- Source: `src/fresh.ts`
 
 ## Hono Middleware Settings (`honoLoggerMiddleware`)
 

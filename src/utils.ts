@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from "node:async_hooks";
+import { Buffer } from "node:buffer";
 import { MetricsTracker } from "./dare-metrics.ts";
 import { logConfig } from "./dare-console-logger.ts";
-import { decodeBase64 } from "@std/encoding";
 
 export const asyncLocalStorage: AsyncLocalStorage<Record<string, unknown>> =
   new AsyncLocalStorage();
@@ -42,7 +42,13 @@ function extractSessionId(token: string | undefined): string | undefined {
   try {
     // Split the token into parts: header, payload, signature
     const payloadBase64 = token.split(".")[1];
-    const payloadString = new TextDecoder().decode(decodeBase64(payloadBase64));
+    if (!payloadBase64) {
+      return undefined;
+    }
+    // JWT payload is base64url encoded.
+    const normalized = payloadBase64.replaceAll("-", "+").replaceAll("_", "/");
+    const padded = normalized + "=".repeat((4 - normalized.length % 4) % 4);
+    const payloadString = Buffer.from(padded, "base64").toString("utf8");
     return payloadString.match(/"sessionId"\s*:\s*"([^"]+)"/)?.[1];
   } catch (error) {
     console.error("Invalid token:", error);
