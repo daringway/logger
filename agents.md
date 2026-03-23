@@ -1,30 +1,33 @@
 # Agents Reference Table
 
-Use this file as the quick index. Follow each `Details` link for full behavior, caveats, and source mapping.
+Use this file as the quick index. Follow each `Details` link for full behavior,
+caveats, and source mapping.
 
-| Area | Setting | Default | Override Path | Details |
-|---|---|---:|---|---|
-| Logger | `logLevel` | `"log"` | `initLogger`, `LOG_LEVEL` | [details](docs/settings.md#loglevel) |
-| Logger | `logSecondsBetweenMetrics` | `500` | `initLogger`, `LOG_SECONDS_BETWEEN_METRICS` | [details](docs/settings.md#logsecondsbetweenmetrics) |
-| Logger | `logPriorityThresholdBytes` | `1048576` | `initLogger`, `LOG_PRIORITY_THRESHOLD_BYTES` | [details](docs/settings.md#logprioritythresholdbytes) |
-| Logger | `logMeta` | `null` | `initLogger` | [details](docs/settings.md#logmeta) |
-| Logger | `logObjects` | `false` | `initLogger`, `LOG_OBJECTS` | [details](docs/settings.md#logobjects) |
-| Logger | `logPretty` | `false` | `initLogger`, `LOG_PRETTY` | [details](docs/settings.md#logpretty) |
-| Logger | `logWithConsole` | `false` | `initLogger`, `LOG_WITH_CONSOLE` | [details](docs/settings.md#logwithconsole) |
-| Logger | `silentInit` | `false` | `initLogger` | [details](docs/settings.md#silentinit) |
-| Env Var | `LOG_LEVEL` | n/a | environment | [details](docs/settings.md#log_level) |
-| Env Var | `LOG_SECONDS_BETWEEN_METRICS` | n/a | environment | [details](docs/settings.md#log_seconds_between_metrics) |
-| Env Var | `LOG_PRIORITY_THRESHOLD_BYTES` | n/a | environment | [details](docs/settings.md#log_priority_threshold_bytes) |
-| Env Var | `LOG_OBJECTS` | n/a | environment | [details](docs/settings.md#log_objects) |
-| Env Var | `LOG_PRETTY` | n/a | environment | [details](docs/settings.md#log_pretty) |
-| Env Var | `LOG_WITH_CONSOLE` | n/a | environment | [details](docs/settings.md#log_with_console) |
-| Express | `doNotLogURLs` | unset | `expressLoggerMiddleware({ doNotLogURLs })` | [details](docs/settings.md#donotlogurls-express) |
-| Fresh | `setCookies` | unset | `freshV1LoggerPlugin({ setCookies })` | [details](docs/settings.md#setcookies-fresh) |
-| Fresh | `doNotLogURLs` | unset | `freshV1LoggerPlugin({ doNotLogURLs })` | [details](docs/settings.md#donotlogurls-fresh) |
-| Context Input | `x-request-id` | generated | request header/cookie | [details](docs/settings.md#x-request-id) |
-| Context Input | `x-trace-path` | derived | request header | [details](docs/settings.md#x-trace-path) |
-| Context Input | `x-correlation-id` / `correlationId` | `"unknown"` | request header/cookie | [details](docs/settings.md#x-correlation-id--correlationid-cookie) |
-| Context Input | `authorization` / `session` | `"unknown"` | request header/cookie | [details](docs/settings.md#authorization--session-cookie) |
-| Context Input | `x-application-name` / `applicationName` | `"unknown"`/`"postman"` | request header/cookie | [details](docs/settings.md#x-application-name--applicationname-cookie) |
-| Context Input | `x-application-version` / `applicationVersion` | `"unknown"` | request header/cookie | [details](docs/settings.md#x-application-version--applicationversion-cookie) |
-| Context Input | `user-agent` | `"unknown"` | request header | [details](docs/settings.md#user-agent) |
+| Area          | Setting                                        |                 Default | Override Path                                  | Details                                                                      |
+| ------------- | ---------------------------------------------- | ----------------------: | ---------------------------------------------- | ---------------------------------------------------------------------------- |
+| Logger        | `logLevel`                                     |                 `"log"` | `initLogger`, `LOG_LEVEL`                      | [details](docs/settings.md#loglevel)                                         |
+| Logger        | `logSecondsBetweenMetrics`                     |                   `500` | `initLogger`, `LOG_SECONDS_BETWEEN_METRICS`    | [details](docs/settings.md#logsecondsbetweenmetrics)                         |
+| Logger        | `logPriorityThresholdBytes`                    |               `1048576` | `initLogger`, `LOG_PRIORITY_THRESHOLD_BYTES`   | [details](docs/settings.md#logprioritythresholdbytes)                        |
+| Logger        | `logMeta`                                      |                  `null` | `initLogger`                                   | [details](docs/settings.md#logmeta)                                          |
+| Logger        | `logObjects`                                   |                 `false` | `initLogger`, `LOG_OBJECTS`                    | [details](docs/settings.md#logobjects)                                       |
+| Logger        | `logPretty`                                    |                 `false` | `initLogger`, `LOG_PRETTY`                     | [details](docs/settings.md#logpretty)                                        |
+| Logger        | `logWithConsole`                               |                 `false` | `initLogger`, `LOG_WITH_CONSOLE`               | [details](docs/settings.md#logwithconsole)                                   |
+| Logger        | `silentInit`                                   |                 `false` | `initLogger`                                   | [details](docs/settings.md#silentinit)                                       |
+| Env Var       | `LOG_LEVEL`                                    |                     n/a | environment                                    | [details](docs/settings.md#log_level)                                        |
+| Env Var       | `LOG_SECONDS_BETWEEN_METRICS`                  |                     n/a | environment                                    | [details](docs/settings.md#log_seconds_between_metrics)                      |
+| Env Var       | `LOG_PRIORITY_THRESHOLD_BYTES`                 |                     n/a | environment                                    | [details](docs/settings.md#log_priority_threshold_bytes)                     |
+| Env Var       | `LOG_OBJECTS`                                  |                     n/a | environment                                    | [details](docs/settings.md#log_objects)                                      |
+| Env Var       | `LOG_PRETTY`                                   |                     n/a | environment                                    | [details](docs/settings.md#log_pretty)                                       |
+| Env Var       | `LOG_WITH_CONSOLE`                             |                     n/a | environment                                    | [details](docs/settings.md#log_with_console)                                 |
+| Express       | `doNotLogURLs`                                 |                   unset | `expressLoggerMiddleware({ doNotLogURLs })`    | [details](docs/settings.md#donotlogurls-express)                             |
+| Fresh         | `setCookies`                                   |                   unset | `freshV1LoggerPlugin({ setCookies })`          | [details](docs/settings.md#setcookies-fresh)                                 |
+| Fresh         | `doNotLogURLs`                                 |                   unset | `freshV1LoggerPlugin({ doNotLogURLs })`        | [details](docs/settings.md#donotlogurls-fresh)                               |
+| Hono          | `doNotLogURLs`                                 |                   unset | `honoLoggerMiddleware({ doNotLogURLs })`       | [details](docs/settings.md#donotlogurls-hono)                                |
+| SolidStart    | `doNotLogURLs`                                 |                   unset | `solidStartLoggerMiddleware({ doNotLogURLs })` | [details](docs/settings.md#donotlogurls-solidstart)                          |
+| Context Input | `x-request-id`                                 |               generated | request header/cookie                          | [details](docs/settings.md#x-request-id)                                     |
+| Context Input | `x-trace-path`                                 |                 derived | request header                                 | [details](docs/settings.md#x-trace-path)                                     |
+| Context Input | `x-correlation-id` / `correlationId`           |             `"unknown"` | request header/cookie                          | [details](docs/settings.md#x-correlation-id--correlationid-cookie)           |
+| Context Input | `authorization` / `session`                    |             `"unknown"` | request header/cookie                          | [details](docs/settings.md#authorization--session-cookie)                    |
+| Context Input | `x-application-name` / `applicationName`       | `"unknown"`/`"postman"` | request header/cookie                          | [details](docs/settings.md#x-application-name--applicationname-cookie)       |
+| Context Input | `x-application-version` / `applicationVersion` |             `"unknown"` | request header/cookie                          | [details](docs/settings.md#x-application-version--applicationversion-cookie) |
+| Context Input | `user-agent`                                   |             `"unknown"` | request header                                 | [details](docs/settings.md#user-agent)                                       |

@@ -19,7 +19,8 @@ For logger config (`initLogger`), values are resolved in this order:
 - Type: `"metrics" | "error" | "warn" | "info" | "log" | "debug" | "trace"`
 - Default: `"log"`
 - Env override: `LOG_LEVEL`
-- Notes: controls which console methods are emitted (`error` and `metrics` always emit)
+- Notes: controls which console methods are emitted (`error` and `metrics`
+  always emit)
 - Source: `src/zod.ts`, `src/dare-console-logger.ts`
 
 ### logSecondsBetweenMetrics
@@ -55,7 +56,8 @@ For logger config (`initLogger`), values are resolved in this order:
 - Type: boolean (`true/false/yes/no` accepted by parser)
 - Default: `false`
 - Env override: `LOG_OBJECTS`
-- Notes: logs objects directly to console; forces `logSecondsBetweenMetrics=0` when enabled
+- Notes: logs objects directly to console; forces `logSecondsBetweenMetrics=0`
+  when enabled
 - Source: `src/zod.ts`, `src/dare-console-logger.ts`
 
 ### logPretty
@@ -82,7 +84,9 @@ For logger config (`initLogger`), values are resolved in this order:
 - Type: boolean (`true/false/yes/no`)
 - Default: `false`
 - Env override: none
-- Notes: intended to suppress init/update debug logs. Current implementation does not apply `initLogger({ silentInit })` into `newConfig`, so this setting is effectively always defaulted during init.
+- Notes: intended to suppress init/update debug logs. Current implementation
+  does not apply `initLogger({ silentInit })` into `newConfig`, so this setting
+  is effectively always defaulted during init.
 - Source: `src/zod.ts`, `src/dare-console-logger.ts`
 
 ## Environment Variables
@@ -151,6 +155,26 @@ For logger config (`initLogger`), values are resolved in this order:
 - Notes: skip logging for matching route path
 - Source: `src/fresh.ts`
 
+## Hono Middleware Settings (`honoLoggerMiddleware`)
+
+### doNotLogURLs (hono)
+
+- Scope: Hono middleware
+- Type: `RegExp`
+- Default: unset
+- Notes: skip logging for matching request path
+- Source: `src/hono.ts`
+
+## SolidStart Middleware Settings (`solidStartLoggerMiddleware`)
+
+### doNotLogURLs (solidstart)
+
+- Scope: SolidStart middleware
+- Type: `RegExp`
+- Default: unset
+- Notes: skip logging for matching request path
+- Source: `src/solidstart.ts`
+
 ## Request Context Inputs (Header/Cookie Driven)
 
 ### x-request-id
@@ -199,5 +223,7 @@ For logger config (`initLogger`), values are resolved in this order:
 
 ## Implementation Notes
 
-- `LoggingConfig` type in `src/zod.ts` does not currently include `logWithConsole`, but runtime schema/config uses it.
-- `silentInit` exists in schema/type, but is not wired into `initLogger`'s `newConfig` object.
+- `LoggingConfig` type in `src/zod.ts` does not currently include
+  `logWithConsole`, but runtime schema/config uses it.
+- `silentInit` exists in schema/type, but is not wired into `initLogger`'s
+  `newConfig` object.
