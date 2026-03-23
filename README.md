@@ -37,7 +37,8 @@ Start logging with `console.error`, `console.warn`, `console.log`,
 
 # App Server Support
 
-Preconfigured support for ExpressJS and Fresh V1 provides the following:
+Preconfigured support for ExpressJS, Fresh V1, Hono, and SolidStart provides the
+following:
 
 - Metrics (Request and Logger)
 - Log Levels
@@ -70,6 +71,33 @@ export default defineConfig({
     tailwind(),
     freshV1LoggerPlugin(),
   ],
+});
+```
+
+## Hono Configuration
+
+```typescript
+import { Hono } from "hono";
+import { honoLoggerMiddleware, initLogger } from "@daringway/logger";
+
+initLogger();
+
+const app = new Hono();
+app.use("*", honoLoggerMiddleware());
+```
+
+## SolidStart Configuration
+
+In a SolidStart middleware file:
+
+```typescript
+import { createMiddleware } from "@solidjs/start/middleware";
+import { initLogger, solidStartLoggerMiddleware } from "@daringway/logger";
+
+initLogger();
+
+export default createMiddleware({
+  onRequest: solidStartLoggerMiddleware(),
 });
 ```
 
@@ -110,7 +138,8 @@ WebStorm testing. Default: false
 LOG_PRETTY: boolean Enable pretty printing of logs for development. Use for CLI
 testing. Default: false
 
-LOG_WITH_CONSOLE: boolean Enable logging to console. Default: false, writes to STDOUT
+LOG_WITH_CONSOLE: boolean Enable logging to console. Default: false, writes to
+STDOUT
 
 # Log Levels Explained
 
